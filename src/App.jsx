@@ -8,11 +8,6 @@ function App() {
   const [calculateDataTemp, setCalculateDataTemp] = useState("");
   const [calculateData, setCalculateData] = useState("");
 
-  console.log("input", input);
-  console.log("calculateDataTemp", calculateDataTemp);
-  console.log("calculateData", calculateData);
-  console.log("output", output);
-
   // handleInput
   const handleInput = (value) => {
     const isNumber = numbers?.includes(value);
@@ -54,7 +49,7 @@ function App() {
     if (isLastCharNumber && isBeforeLastCharOp) {
       setCalculateDataTemp((prev) => prev + input.slice(0, -2));
       setInput(input.slice(-2));
-    } else if (isBeforeLastCharOp && lastChar === ".") {
+    } else if (isBeforeLastCharOp) {
       setCalculateDataTemp((prev) => prev + input.slice(0, -1));
       setInput(input[input.length - 1]);
     }
@@ -62,8 +57,8 @@ function App() {
 
   const handleNumbers = (number) => {
     const value = number.toString();
-    const lastChar = input[input.length - 1];
-    const beforeLastChar = input[input.length - 2];
+    // const lastChar = input[input.length - 1];
+    // const beforeLastChar = input[input.length - 2];
 
     if (input === "0") {
       setInput(value);
@@ -73,9 +68,19 @@ function App() {
   };
 
   const handleDot = () => {
+    const lastChar = input[input.length - 1];
+    // const beforeLastChar = input[input.length - 2];
+    const isLastCharOp = operators?.includes(lastChar);
+    // const isBeforeLastCharOp = operators?.includes(beforeLastChar);
+    const inputHasDot = input.includes(".");
+
     if (input === "" || input === "0") {
       setInput("0.");
-    } else if (!input.includes(".")) {
+    } else if (isLastCharOp && lastChar === ".") {
+      setInput(input + "0.");
+    } else if (inputHasDot) {
+      setInput(input);
+    } else {
       setInput(input + ".");
     }
   };
@@ -107,25 +112,17 @@ function App() {
       setCalculateDataTemp((prev) => prev + input);
       setInput("");
     }
+
+    const data = calculateDataTemp + input;
+    const total = getTotal(data);
+    setOutput(total);
+    setCalculateData(data);
   };
 
   const getTotal = (data) => {
     const total = eval(data);
     return total;
   };
-
-  useEffect(() => {
-    if (calculateDataTemp !== "") {
-      try {
-        setCalculateData(calculateDataTemp);
-        console.log("calculateData", calculateData);
-        const result = getTotal(calculateData);
-        setOutput(result);
-      } catch (error) {
-        setOutput("Error");
-      }
-    }
-  }, [calculateDataTemp, calculateData]);
 
   return (
     <div className="app">
